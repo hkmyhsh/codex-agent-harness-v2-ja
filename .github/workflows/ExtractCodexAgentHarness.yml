@@ -30,18 +30,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.HARNESS_PUSH_TOKEN }}
           
-      - name: Check ZIP file
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [[ ! -f "${ZIP_FILE}" ]]; then
-            echo "::error::${ZIP_FILE} がリポジトリ直下に存在しません。"
-            exit 1
-          fi
-
-          echo "ZIP file found: ${ZIP_FILE}"
-
       - name: Validate ZIP entries
         shell: bash
         run: |
