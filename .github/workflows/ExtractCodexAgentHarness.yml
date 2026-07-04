@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: extract-codex-agent-harness-${{ github.ref }}
+  group: extract-codex-agent-harness-v2-${{ github.ref }}
   cancel-in-progress: false
 
 env:
@@ -71,7 +71,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          EXTRACT_DIR="${RUNNER_TEMP}/codex-agent-harness-ja"
+          EXTRACT_DIR="${RUNNER_TEMP}/codex-agent-harness-v2-ja"
 
           rm -rf "${EXTRACT_DIR}"
           mkdir -p "${EXTRACT_DIR}"
