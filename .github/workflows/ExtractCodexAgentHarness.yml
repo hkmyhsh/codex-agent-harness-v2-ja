@@ -4,28 +4,32 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  workflows: write
-
-concurrency:
-  group: extract-codex-agent-harness-v2-${{ github.ref }}
-  cancel-in-progress: false
-
-env:
-  ZIP_FILE: codex-agent-harness-v2-ja.zip
+  contents: read
 
 jobs:
   extract-and-commit:
-    name: Extract ZIP and commit files
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check push token
+        shell: bash
+        env:
+          HARNESS_PUSH_TOKEN: ${{ secrets.HARNESS_PUSH_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${HARNESS_PUSH_TOKEN}" ]]; then
+            echo "::error::HARNESS_PUSH_TOKEN が設定されていません。"
+            exit 1
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
-
+          token: ${{ secrets.HARNESS_PUSH_TOKEN }}
+          
       - name: Check ZIP file
         shell: bash
         run: |
@@ -130,7 +134,9 @@ jobs:
             exit 0
           fi
 
-          git commit \
-            -m "chore: extract Codex Agent Harness"
+          git commit -m "chore: extract Codex Agent Harness v2"
+
+          git fetch origin "${GITHUB_REF_NAME}"
+          git rebase "origin/${GITHUB_REF_NAME}"
 
           git push origin "HEAD:${GITHUB_REF_NAME}"
