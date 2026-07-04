@@ -2,6 +2,31 @@
 
 Codexを「単発のコード生成」ではなく、案件単位で **計画・設計・実行・検証・レビュー・文書化・引き継ぎ** まで回すためのテンプレートです。
 
+## 各エージェントの処理順序と役割
+
+```
+Planner
+    ↓
+Architect
+    ↓
+Executor
+    ↓
+Tester
+    ↓
+Reviewer
+    ↓
+Documenter
+```
+
+それぞれの役割は次のとおりです。
+
+* Planner：タスク分解・進捗管理
+* Architect：設計方針・アーキテクチャの検討
+* Executor：実装・調査
+* Tester：テストケース作成・実行・品質確認
+* Reviewer：設計・コードレビュー
+* Documenter：Runbookや設計書、判断履歴の更新
+
 ## v2の追加要素
 
 - Planner / Architect / Executor / Tester / Reviewer / Documenter の6 Agent構成
