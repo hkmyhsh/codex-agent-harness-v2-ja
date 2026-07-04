@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: write
+  workflows: write
 
 concurrency:
   group: extract-codex-agent-harness-v2-${{ github.ref }}
