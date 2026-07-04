@@ -1,0 +1,135 @@
+name: Extract Codex Agent Harness
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: extract-codex-agent-harness-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ZIP_FILE: codex-agent-harness-v2-ja.zip
+
+jobs:
+  extract-and-commit:
+    name: Extract ZIP and commit files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Check ZIP file
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ ! -f "${ZIP_FILE}" ]]; then
+            echo "::error::${ZIP_FILE} がリポジトリ直下に存在しません。"
+            exit 1
+          fi
+
+          echo "ZIP file found: ${ZIP_FILE}"
+
+      - name: Validate ZIP entries
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 <<'PY'
+          import os
+          import sys
+          import zipfile
+          from pathlib import PurePosixPath
+
+          zip_file = os.environ["ZIP_FILE"]
+
+          with zipfile.ZipFile(zip_file) as archive:
+              for entry in archive.namelist():
+                  normalized = entry.replace("\\", "/")
+                  path = PurePosixPath(normalized)
+
+                  if path.is_absolute() or ".." in path.parts:
+                      print(
+                          f"Unsafe ZIP entry detected: {entry}",
+                          file=sys.stderr,
+                      )
+                      sys.exit(1)
+
+          print("ZIP entries are valid.")
+          PY
+
+      - name: Extract ZIP
+        id: extract
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          EXTRACT_DIR="${RUNNER_TEMP}/codex-agent-harness-ja"
+
+          rm -rf "${EXTRACT_DIR}"
+          mkdir -p "${EXTRACT_DIR}"
+
+          unzip -q -o "${ZIP_FILE}" -d "${EXTRACT_DIR}"
+
+          # ZIP内が単一のルートディレクトリで構成されている場合、
+          # そのディレクトリの中身をリポジトリ直下へ配置します。
+          shopt -s dotglob nullglob
+          entries=("${EXTRACT_DIR}"/*)
+
+          if [[ ${#entries[@]} -eq 1 && -d "${entries[0]}" ]]; then
+            SOURCE_DIR="${entries[0]}"
+            echo "Single root directory detected: ${SOURCE_DIR}"
+          else
+            SOURCE_DIR="${EXTRACT_DIR}"
+            echo "Files will be copied directly from: ${SOURCE_DIR}"
+          fi
+
+          # SOURCE_DIR/. の形式により、隠しファイル・隠しディレクトリも対象になります。
+          # ZIP内に.gitが存在しても、既存リポジトリの.gitは上書きしません。
+          rsync \
+            --archive \
+            --exclude=".git/" \
+            "${SOURCE_DIR}/" \
+            "${GITHUB_WORKSPACE}/"
+
+          echo "source_dir=${SOURCE_DIR}" >> "${GITHUB_OUTPUT}"
+
+      - name: Remove ZIP file
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "${ZIP_FILE}"
+
+      - name: Show changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --short --untracked-files=all
+
+      - name: Commit and push changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add --all
+
+          if git diff --cached --quiet; then
+            echo "コミット対象の変更はありません。"
+            exit 0
+          fi
+
+          git commit \
+            -m "chore: extract Codex Agent Harness"
+
+          git push origin "HEAD:${GITHUB_REF_NAME}"
