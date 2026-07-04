@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Codex Agent Harness State v2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "title",
+    "status",
+    "current_agent",
+    "next_agent",
+    "current_step",
+    "next_action",
+    "retry_count",
+    "max_retry_count",
+    "blockers",
+    "completed_steps",
+    "pending_steps",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "planning",
+        "designing",
+        "executing",
+        "testing",
+        "review_required",
+        "documenting",
+        "blocked",
+        "done",
+        "failed"
+      ]
+    },
+    "current_agent": {
+      "type": "string",
+      "enum": [
+        "Planner",
+        "Architect",
+        "Executor",
+        "Tester",
+        "Reviewer",
+        "Documenter"
+      ]
+    },
+    "next_agent": {
+      "type": "string",
+      "enum": [
+        "Planner",
+        "Architect",
+        "Executor",
+        "Tester",
+        "Reviewer",
+        "Documenter"
+      ]
+    },
+    "current_step": {
+      "type": "string"
+    },
+    "next_action": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "string"
+    },
+    "risk_level": {
+      "type": "string"
+    },
+    "human_approval_required": {
+      "type": "boolean"
+    },
+    "retry_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "max_retry_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "completed_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pending_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "updated_at": {
+      "type": "string"
+    }
+  }
+}

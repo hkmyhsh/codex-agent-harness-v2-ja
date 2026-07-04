@@ -1,0 +1,25 @@
+name: Agent Harness Check
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  validate-agent-state:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate state.json
+        run: python scripts/validate_state.py
+      - name: Check required docs
+        run: |
+          test -f AGENTS.md
+          test -f .agent/task.md
+          test -f .agent/plan.md
+          test -f .agent/decisions.md
+          test -f .agent/review.md
+          test -f docs/runbook.md

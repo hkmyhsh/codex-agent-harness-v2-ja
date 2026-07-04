@@ -1,0 +1,33 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "github-actions-runner-wait-detection-template",
+  "title": "GitHub Actions self-hosted runner 待機時間監視",
+  "status": "not_started",
+  "current_agent": "Planner",
+  "next_agent": "Planner",
+  "current_step": "initial_planning",
+  "next_action": "Plannerとして task.md / project_rules.md を読み、plan.md を更新する",
+  "priority": "medium",
+  "risk_level": "medium",
+  "human_approval_required": false,
+  "retry_count": 0,
+  "max_retry_count": 3,
+  "blockers": [],
+  "completed_steps": [],
+  "pending_steps": [
+    "要件整理",
+    "設計方針決定",
+    "実装方針作成",
+    "テスト観点作成",
+    "レビュー",
+    "文書化"
+  ],
+  "artifacts": [
+    "docs/design.md",
+    "docs/runbook.md",
+    ".agent/plan.md",
+    ".agent/decisions.md",
+    ".agent/review.md"
+  ],
+  "updated_at": "2026-07-04T00:00:00+09:00"
+}
