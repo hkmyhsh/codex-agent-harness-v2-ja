@@ -4,6 +4,11 @@
   "title": "GitHub Actions self-hosted runner 待機時間監視",
   "status": "not_started",
   "current_agent": "Planner",
+  "allowed_actions":[
+        "plan",
+        "estimate",
+        "prioritize"
+  ],
   "next_agent": "Planner",
   "current_step": "initial_planning",
   "next_action": "Plannerとして task.md / project_rules.md を読み、plan.md を更新する",
